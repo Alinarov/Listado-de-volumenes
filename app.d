@@ -1,6 +1,6 @@
 import core.sys.windows.windows;
 import std.stdio;
-import std.string;
+import std.array;
 import std.conv;
 
 extern (Windows) {
@@ -18,9 +18,27 @@ void main() {
 
     writeln("Letras de unidad disponibles:");
 
-    auto splitDrives = split(buffer[0 .. cast(ulong)drives], '\0'); // Dividir la cadena en partes
+    auto visibleDrives = split(buffer[0 .. cast(ulong)drives], '\0'); // Dividir la cadena en partes
 
-    foreach (drive; splitDrives) {
+    foreach (drive; visibleDrives) {
         writeln(to!string(drive)); // Convertir cada parte a una cadena y escribir
+    }
+
+    // Buscar la unidad oculta
+    writeln("\nLetra de unidad oculta:");
+
+    foreach (char letra; "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
+        string unidad = to!string(letra) ~ ":\\"; // Construir la ruta de unidad
+        bool encontrada = false;
+        foreach (drive; visibleDrives) {
+            if (to!string(drive) == unidad) {
+                encontrada = true;
+                break;
+            }
+        }
+        if (!encontrada) {
+            writeln(unidad);
+            break;
+        }
     }
 }
